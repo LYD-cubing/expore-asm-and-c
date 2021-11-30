@@ -1,0 +1,81 @@
+//记录对C的一些新的认识：
+
+-关键字：
+    sizeof //不是函数
+	volatile :说明变量在程序中可被隐含的改变
+	register:寄存器变量，必须是能被CPU寄存器所接受的类型
+	
+-switch case:
+	case 后面只能是整形或字符型的常量或常量表达式
+		int  enum  char  
+		  --//字符型数据在内存的存储形式是ASCll码
+          
+-const:
+	const修饰的变量不能定义数组的维数，也不能放在case关键字后面//C++可
+        
+-return:
+	1.不可返回指向“栈内存”的“指针”，因为该内存在函数体结束时自动被销毁
+        eg: char*GetMemory(char*p,int num)
+            {
+                p=(char*)malloc(num*sizeof(char));
+                return p; //可以,堆的内存不会自动回收
+            }
+	2.不能反回数组
+    
+-#define 和 const:
+	1.#define宏在预编译阶段进行替换，而const修饰的只读变量是在编译的时候确定其值 
+	2.#define PCHAR char*
+		PCHAR p3,p4;//p4不是指针 -->与typedef的一个区别
+        
+-文件包含：
+	#include <filename> 到系统规定的路径去找这个文件
+	#include "filename" 先在当前目录查找，未找到则到系统指定目录查找
+    
+-注释符号：
+	编译器会将注释剔除掉，并用空格代替原来的注释
+-'\'
+	//C语言里以反斜杠(\)表示断行，跟在反斜杠后面的字符自动接续到前一行
+	eg:
+    cha\
+r*s;
+
+-预处理相关
+	#error #line #pragma .....
+        #:字符串中包含宏参数  ##:粘合剂 
+    
+-内存对齐
+	为了提高程序的性能，数据结构(尤其栈)应尽可能地在自然边界对齐
+	具体访问：
+		https://blog.csdn.net/qq_31821675/article/details/72853551
+  
+-数组和指针：int a[5]; //数组和指针毫不相干
+    1.a与&a: a:数组首元素的首地址,a+1->&a[1]。 &a:数组的首地址,&a+1->&a+5*sizeof(int) 。
+    2.定义数组声明指针，定义指针声明数组  //#error
+        是什么就声明什么
+    3.无法向函数传递一个数组 //一维数组作为参数时，编译器总是把它解析成一个指向其首地址的指针
+      函数返回值也不能是一个数组
+    4.函数指针:好处:类似面向对象的感觉
+    
+-内存管理
+    1.野指针 free完后一定要置NULL (c/c++)/nullptr(c++)
+    2.分配大小时，注意字符串常量 eg:char*p1="abcdefg"; char*p2=(char*)malloc(sizeof(char)*sizeof(p1) +1);
+    3.函数的入口校验  //保证指针是有效的
+          assert(NULL!=p) //assert是一个宏，包含在assert.h中
+                          //用于调试代码，Reales会被优化掉
+          if(NULL!=p) 
+-确定当前系统的大小端模式：小端：高高，低低
+	int checkSystem()   //return 1->little , return 0->big
+	{
+		union check
+		{
+			int i;
+			char ch;
+		}c;
+		c.i=1;
+		return(c.ch==1); 
+	}
+	
+-其他(习惯)：
+	1.代码缩进一般为4个字符，但不要使用Tab键，不同编译器Tab键定义的空格数不一样
+	2.不到非不得已，不允许使用printf函数，而要自己去查看变量和内存的值
+    3.函数参数名要写完整，若没参数则用void填充
